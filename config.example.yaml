@@ -1,0 +1,38 @@
+# async-web-collector example configuration
+
+concurrency: 8            # maximum concurrent requests
+timeout: 20               # per-request timeout in seconds
+retries: 3                # retry attempts for failures/retryable statuses
+backoff_factor: 0.5       # base delay for exponential backoff
+max_backoff: 30           # upper bound on backoff delay (seconds)
+rate_limit: 2             # requests per second per host (0 disables)
+respect_robots: true      # enforce robots.txt
+user_agent: "async-web-collector/0.1 (+https://github.com/ahmedayyad/async-web-collector)"
+follow_redirects: true
+http2: false              # requires the 'http2' extra
+verify: true
+
+headers:
+  Accept-Language: "en"
+
+# Optional: follow links discovered on the pages.
+crawl:
+  enabled: false
+  max_pages: 50
+  max_depth: 2
+  same_domain: true
+
+extract:
+  # Container selector (CSS or XPath). One record per matching element.
+  # Omit to extract a single record from the whole page.
+  scope: "article.product"
+  fields:
+    - {name: title, css: "h2.title", attr: text}
+    - {name: price, css: "span.price", attr: text}
+    - {name: link,  css: "a", attr: href}
+    - {name: tags,  css: "ul.tags li", all: true}
+    - {name: sku,   xpath: ".//span[@class='sku']/text()"}
+
+output:
+  format: json            # json or csv
+  path: out/results.json
